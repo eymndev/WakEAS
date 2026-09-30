@@ -106,7 +106,7 @@ final class EASAlarmSound {
             player.scheduleBuffer(buffer, at: nil, options: .loops, completionHandler: nil)
             duration += Double(intro.frameLength) / intro.format.sampleRate
         }
-        try? player.playAudio()
+        player.play()
         return duration
     }
 
@@ -121,10 +121,11 @@ final class EASAlarmSound {
         } catch {
             return false
         }
-        return await withCheckedContinuation { continuation in
-            session.activate(options: []) { activated, _ in
-                continuation.resume(returning: activated)
-            }
+        do {
+            try session.setActive(true)
+            return true
+        } catch {
+            return false
         }
         #else
         return true
@@ -133,11 +134,7 @@ final class EASAlarmSound {
 
     #if os(iOS)
     private func deactivateSession() async {
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            AVAudioSession.sharedInstance().deactivate(options: .notifyOthersOnDeactivation) { _, _ in
-                continuation.resume()
-            }
-        }
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
     #endif
 
@@ -151,11 +148,7 @@ final class EASAlarmSound {
         self.intro = intro
         self.japanBuffer = japanBuffer
         engine.attach(player)
-        do {
-            try engine.connectNode(player, to: engine.mainMixerNode, format: format)
-        } catch {
-            return
-        }
+        engine.connect(player, to: engine.mainMixerNode, format: format)
         installed = true
     }
 
