@@ -18,12 +18,13 @@ jobs:
       matrix:
         platform: [macOS, iOS Simulator]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: latest
       - name: Build
         run: |
+          ls /Applications | grep -i xcode
           xcodebuild -version
           xcodebuild -project WakEAS.xcodeproj -scheme WakEAS \
             -destination 'generic/platform=${{ matrix.platform }}' \
