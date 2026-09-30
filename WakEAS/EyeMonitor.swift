@@ -410,6 +410,10 @@ nonisolated struct EyeTrack: @unchecked Sendable {
     private var calibrationFrames = 0
     private var closedFrames = 0
 
+    init(lenient: Bool) {
+        self.lenient = lenient
+    }
+
     mutating func interrupt(resetCalibration: Bool) {
         closedFrames = 0
         hasSample = false
