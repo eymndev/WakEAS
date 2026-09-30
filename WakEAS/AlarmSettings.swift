@@ -136,6 +136,10 @@ struct AlarmSettingsView: View {
                 speechSection("Opening", text: $introSpeech, language: $introLanguage)
                 speechSection("Warning", text: $warningSpeech, language: $warningLanguage)
                 speechSection("Closing", text: $endingSpeech, language: $endingLanguage)
+                Section {
+                    Button("Reset Speech to Defaults", role: .destructive, action: resetSpeech)
+                        .disabled(speechIsDefault)
+                }
             }
             .navigationTitle("Alarm Settings")
             .toolbar {
@@ -158,6 +162,21 @@ struct AlarmSettingsView: View {
         #else
         "Allow nearby Macs"
         #endif
+    }
+
+    private var speechIsDefault: Bool {
+        introSpeech == AlarmDefaults.intro && introLanguage == .english
+            && warningSpeech == AlarmDefaults.warning && warningLanguage == .english
+            && endingSpeech == AlarmDefaults.ending && endingLanguage == .turkish
+    }
+
+    private func resetSpeech() {
+        introSpeech = AlarmDefaults.intro
+        introLanguage = .english
+        warningSpeech = AlarmDefaults.warning
+        warningLanguage = .english
+        endingSpeech = AlarmDefaults.ending
+        endingLanguage = .turkish
     }
 
     private func speechSection(_ title: String, text: Binding<String>, language: Binding<SpeechLanguage>) -> some View {
